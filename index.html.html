@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gearhead Clicker</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #1a1a1a;
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            user-select: none;
+        }
+
+        .game-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            width: 800px;
+            background-color: #2d2d2d;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            overflow: hidden;
+            border: 1px solid #404040;
+        }
+
+        .click-section {
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-right: 1px solid #404040;
+            background: radial-gradient(circle, #3a3a3a 0%, #222222 100%);
+        }
+
+        .stats-display {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .stats-display h1 {
+            font-size: 2.5rem;
+            margin: 0 0 5px 0;
+            color: #ff4757;
+        }
+
+        .stats-display p {
+            margin: 5px 0;
+            color: #a0a0a0;
+            font-size: 1.1rem;
+        }
+
+        /* Pure CSS Car Graphic styling */
+        .car-button {
+            position: relative;
+            width: 200px;
+            height: 100px;
+            cursor: pointer;
+            transition: transform 0.05s ease;
+            margin: 20px 0;
+        }
+
+        .car-button:active {
+            transform: scale(0.95);
+        }
+
+        .car-body {
+            position: absolute;
+            bottom: 25px;
+            width: 180px;
+            height: 45px;
+            background-color: #ff4757;
+            border-radius: 15px 30px 10px 10px;
+        }
+
+        .car-cabin {
+            position: absolute;
+            bottom: 65px;
+            left: 30px;
+            width: 90px;
+            height: 30px;
+            background-color: #ff4757;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .car-cabin::before {
+            content: '';
+            position: absolute;
+            top: 5px;
+            left: 10px;
+            width: 35px;
+            height: 25px;
+            background-color: #a4b0be;
+            border-radius: 10px 5px 0 0;
+        }
+
+        .car-cabin::after {
+            content: '';
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            width: 30px;
+            height: 25px;
+            background-color: #a4b0be;
+            border-radius: 5px 10px 0 0;
+        }
+
+        .wheel {
+            position: absolute;
+            bottom: 10px;
+            width: 35px;
+            height: 35px;
+            background-color: #2f3542;
+            border: 4px solid #747d8c;
+            border-radius: 50%;
+        }
+
+        .wheel-left { left: 25px; }
+        .wheel-right { right: 45px; }
+
+        .shop-section {
+            padding: 40px;
+            background-color: #252525;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .shop-section h2 {
+            margin-top: 0;
+            border-bottom: 2px solid #404040;
+            padding-bottom: 10px;
+            color: #ffa502;
+        }
+
+        .upgrade-btn {
+            background-color: #333;
+            border: 1px solid #444;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .upgrade-btn:hover:not(:disabled) {
+            background-color: #444;
+            border-color: #ff4757;
+        }
+
+        .upgrade-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .upgrade-details div:first-child {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 2px;
+        }
+
+        .upgrade-details div:last-child {
+            font-size: 0.85rem;
+            color: #a0a0a0;
+        }
+
+        .upgrade-cost {
+            font-weight: bold;
+            color: #ffa502;
+            font-size: 1.1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <!-- Left Side: Clicking Action -->
+        <div class="click-section">
+            <div class="stats-display">
+                <h1 id="mile-count">0 Miles</h1>
+                <p id="mps-display">0 miles per second</p>
+                <p id="mpc-display">1 mile per click</p>
+            </div>
+            
+            <!-- Clickable Car Graphic -->
+            <div class="car-button" id="car-clicker">
+                <div class="car-cabin"></div>
+                <div class="car-body"></div>
+                <div class="wheel wheel-left"></div>
+                <div class="wheel wheel-right"></div>
+            </div>
+        </div>
+
+        <!-- Right Side: Upgrades Shop -->
+        <div class="shop-section">
+            <h2>Performance Shop</h2>
+            
+            <button class="upgrade-btn" id="buy-tires" disabled>
+                <div class="upgrade-details">
+                    <div>Grip Tires</div>
+                    <div>Increases miles per click (+1)</div>
+                </div>
+                <div class="upgrade-cost" id="tires-cost">15 Miles</div>
+            </button>
+
+            <button class="upgrade-btn" id="buy-engine" disabled>
+                <div class="upgrade-details">
+                    <div>V6 Engine Upgrade</div>
+                    <div>Generates miles automatically (+1/s)</div>
+                </div>
+                <div class="upgrade-cost" id="engine-cost">100 Miles</div>
+            </button>
+
+            <button class="upgrade-btn" id="buy-turbo" disabled>
+                <div class="upgrade-details">
+                    <div>Twin Turbocharger</div>
+                    <div>Generates miles automatically (+8/s)</div>
+                </div>
+                <div class="upgrade-cost" id="turbo-cost">500 Miles</div>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Game State Variables
+        let miles = 0;
+        let milesPerClick = 1;
+        let milesPerSecond = 0;
+
+        // Upgrade Costs & Tracking
+        let tireCost = 15;
+        let engineCost = 100;
+        let turboCost = 500;
+
+        let tireCount = 0;
+        let engineCount = 0;
+        let turboCount = 0;
+
+        // DOM Elements
+        const mileCountEl = document.getElementById('mile-count');
+        const mpsDisplayEl = document.getElementById('mps-display');
+        const mpcDisplayEl = document.getElementById('mpc-display');
+        const carClicker = document.getElementById('car-clicker');
+
+        const buyTiresBtn = document.getElementById('buy-tires');
+        const buyEngineBtn = document.getElementById('buy-engine');
+        const buyTurboBtn = document.getElementById('buy-turbo');
+
+        const tiresCostEl = document.getElementById('tires-cost');
+        const engineCostEl = document.getElementById('engine-cost');
+        const turboCostEl = document.getElementById('turbo-cost');
+
+        // Update UI Display
+        function updateUI() {
+            // Stats
+            mileCountEl.textContent = `${Math.floor(miles)} ${miles === 1 ? 'Mile' : 'Miles'}`;
+            mpsDisplayEl.textContent = `${milesPerSecond.toFixed(1)} miles per second`;
+            mpcDisplayEl.textContent = `${milesPerClick} miles per click`;
+
+            // Dynamic Costs text
+            tiresCostEl.textContent = `${tireCost} Miles`;
+            engineCostEl.textContent = `${engineCost} Miles`;
+            turboCostEl.textContent = `${turboCost} Miles`;
+
+            // Enable/Disable buttons based on budget
+            buyTiresBtn.disabled = miles < tireCost;
+            buyEngineBtn.disabled = miles < engineCost;
+            buyTurboBtn.disabled = miles < turboCost;
+        }
+
+        // Click Handling
+        carClicker.addEventListener('click', () => {
+            miles += milesPerClick;
+            updateUI();
+        });
+
+        // Upgrade Purchases
+        buyTiresBtn.addEventListener('click', () => {
+            if (miles >= tireCost) {
+                miles -= tireCost;
+                tireCount++;
+                milesPerClick += 1;
+                tireCost = Math.round(tireCost * 1.15); // Scale price by 15%
+                updateUI();
+            }
+        });
+
+        buyEngineBtn.addEventListener('click', () => {
+            if (miles >= engineCost) {
+                miles -= engineCost;
+                engineCount++;
+                milesPerSecond += 1;
+                engineCost = Math.round(engineCost * 1.15);
+                updateUI();
+            }
+        });
+
+        buyTurboBtn.addEventListener('click', () => {
+            if (miles >= turboCost) {
+                miles -= turboCost;
+                turboCount++;
+                milesPerSecond += 8;
+                turboCost = Math.round(turboCost * 1.15);
+                updateUI();
+            }
+        });
+
+        // Main Game Loop (Runs 10 times a second for smoothness)
+        setInterval(() => {
+            miles += milesPerSecond / 10;
+            updateUI();
+        }, 100);
+
+        // Initial render
+        updateUI();
+    </script>
+</body>
+</html>
